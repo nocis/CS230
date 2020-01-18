@@ -30,3 +30,8 @@
 *.exe
 *.out
 *.app
+/proj-rt-files/res/*
+/proj-rt-files/.idea/*
+/proj-rt-files/model/*
+/proj-rt-files/build/*
+/proj-rt-files/cmake-build-debug/*
