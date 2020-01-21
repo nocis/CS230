@@ -1,13 +1,14 @@
 #include "camera.h"
 
 Camera::Camera()
-    :colors(0)
+    :colors(0), grayColors(0), grayMax(0), grayMin(INF)
 {
 }
 
 Camera::~Camera()
 {
     delete[] colors;
+    delete[] grayColors;
 }
 
 void Camera::Position_And_Aim_Camera(const vec3& position_input,
@@ -33,6 +34,10 @@ void Camera::Set_Resolution(const ivec2& number_pixels_input)
     number_pixels=number_pixels_input;
     if(colors) delete[] colors;
     colors=new Pixel[number_pixels[0]*number_pixels[1]];
+#ifdef _DEPTH
+    if(grayColors) delete[] grayColors;
+    grayColors=new double[number_pixels[0]*number_pixels[1]];
+#endif
     min=-0.5*image_size;
     max=0.5*image_size;
     pixel_size = image_size/vec2(number_pixels);

@@ -1,6 +1,7 @@
 #ifndef __CAMERA_H__
 #define __CAMERA_H__
-
+#define _DEPTH 1
+#define INF 0x3f3f3f3f
 #include <algorithm>
 #include "vec.h"
 #include "misc.h"
@@ -41,9 +42,15 @@ public:
 
     //********************************************************
     //Generate Depth image
-    Pixel* grayColors; // Gray Scale Pixel data; row-major order
+    double* grayColors; // Gray Scale Pixel data; row-major order
     double grayMax;
     double grayMin;
+    void Set_Depth(const ivec2& pixel_index,const double& depth)
+    {
+        int i=pixel_index[0];
+        int j=pixel_index[1];
+        grayColors[j*number_pixels[0]+i]=depth;
+    }
     //********************************************************
     Camera();
     ~Camera();

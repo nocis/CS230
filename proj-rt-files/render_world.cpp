@@ -47,11 +47,16 @@ void Render_World::Render_Pixel(const ivec2& pixel_index)
     Ray ray( camera.position , ( camera.World_Position( pixel_index ) - camera.position ).normalized() );
 #ifdef _DEPTH
     double depth = Cast_Ray_Depth(ray,1);
-    camera.Set_Pixel(pixel_index,Pixel_Color(color));
-#else
+    if ( depth > small_t )
+    {
+        camera.grayMax = depth > camera.grayMax? depth : camera.grayMax;
+        camera.grayMin = depth < camera.grayMin? depth : camera.grayMin;
+        camera.Set_Depth( pixel_index, depth );
+    }
+#endif
     vec3 color=Cast_Ray(ray,1);
     camera.Set_Pixel(pixel_index,Pixel_Color(color));
-#endif
+
 }
 
 void Render_World::Render()
@@ -62,6 +67,26 @@ void Render_World::Render()
     for(int j=0;j<camera.number_pixels[1];j++)
         for(int i=0;i<camera.number_pixels[0];i++)
             Render_Pixel(ivec2(i,j));
+
+
+#ifdef _DEPTH
+    if (camera.grayMax != 0 && camera.grayMin < camera.grayMax)
+    {
+        for(int j=0;j<camera.number_pixels[1];j++)
+        {
+            for(int i=0;i<camera.number_pixels[0];i++)
+            {
+                double tmp = camera.grayColors[j*camera.number_pixels[0]+i];
+                camera.grayColors[j*camera.number_pixels[0]+i] -= camera.grayMax;
+                camera.grayColors[j*camera.number_pixels[0]+i] /= ( camera.grayMin - camera.grayMax);
+                camera.grayColors[j*camera.number_pixels[0]+i] *= 65535.0;
+                if ( camera.grayColors[j*camera.number_pixels[0]+i] > 65535.0)
+                    camera.grayColors[j*camera.number_pixels[0]+i] = 0;
+            }
+        }
+
+    }
+#endif
 }
 
 // cast ray and return the color of the closest intersected surface point,

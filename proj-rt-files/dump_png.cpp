@@ -90,3 +90,36 @@ void Read_png(Pixel*& data,int& width,int& height,const char* filename)
     png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
     fclose(file);
 }
+
+void Dump_png_gray(double* data,int width,int height,const char* filename)
+{
+    FILE* file=fopen(filename,"wb");
+    assert(file);
+
+    png_structp png_ptr=png_create_write_struct(PNG_LIBPNG_VER_STRING,0,0,0);
+    assert(png_ptr);
+    png_infop info_ptr=png_create_info_struct(png_ptr);
+    assert(info_ptr);
+    bool result=setjmp(png_jmpbuf(png_ptr));
+    assert(!result);
+    png_init_io(png_ptr,file);
+    int color_type=PNG_COLOR_TYPE_GRAY;
+    png_set_IHDR(png_ptr,info_ptr,width,height,16,color_type,PNG_INTERLACE_NONE,PNG_COMPRESSION_TYPE_DEFAULT,PNG_FILTER_TYPE_DEFAULT);
+
+    png_write_info (png_ptr, info_ptr);
+    png_set_swap(png_ptr);
+
+    unsigned short int * row_pointers= new unsigned short int [height*width];
+
+    for (int i=0; i<height; i++)
+        for (int j=0; j<width; j++)
+            row_pointers[i * width + j] = (unsigned short int) data[i * width + j];
+
+
+    for (int i=0; i<height; i++)
+        png_write_row (png_ptr, (png_const_bytep)&row_pointers[i*width]);
+    png_write_end (png_ptr, NULL);
+    delete[] row_pointers;
+    png_destroy_write_struct(&png_ptr,&info_ptr);
+    fclose(file);
+}

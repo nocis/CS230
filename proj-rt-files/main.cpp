@@ -58,6 +58,7 @@ void Usage(const char* exec)
 
 void Parse(Render_World& world,int& width,int& height,const char* test_file);
 void Dump_png(Pixel* data,int width,int height,const char* filename);
+void Dump_png_gray(double* data,int width,int height,const char* filename);
 void Read_png(Pixel*& data,int& width,int& height,const char* filename);
 
 int main(int argc, char** argv)
@@ -111,7 +112,9 @@ int main(int argc, char** argv)
 
     // Save the rendered image to disk
     Dump_png(world.camera.colors,width,height,"output.png");
-
+#ifdef _DEPTH
+    Dump_png_gray(world.camera.grayColors, width, height, "output_depth.png");
+#endif
     // If a solution is specified, compare against it.
     if(solution_file)
     {
