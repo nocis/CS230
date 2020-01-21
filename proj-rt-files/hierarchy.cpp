@@ -6,15 +6,16 @@
 void Hierarchy::Reorder_Entries()
 {
     //BVH
-    if(!entries.size()) return;
+    if ( !entries.size() ) return;
     TODO;
 }
 
 // Populate tree from entries.
 void Hierarchy::Build_Tree()
 {
-    if(!entries.size()) return;
+    if ( !entries.size() ) return;
     TODO;
+    tree.push_back( entries[0].box );
 }
 
 // Return a list of candidates (indices into the entries list) whose
@@ -22,4 +23,5 @@ void Hierarchy::Build_Tree()
 void Hierarchy::Intersection_Candidates(const Ray& ray, std::vector<int>& candidates) const
 {
     TODO;
+    candidates.push_back(0);
 }

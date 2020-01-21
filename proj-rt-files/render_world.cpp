@@ -24,14 +24,17 @@ Hit Render_World::Closest_Intersection(const Ray& ray)
 {
     TODO;
     //bounding box collision detection
+    Hit closestInfo{0,0,0};
     std::vector<int> results;
     hierarchy.Intersection_Candidates(ray, results);
     //ray casting
-    for( int i = 0; i < results.size(); i++ )
+    for ( int i = 0; i < results.size(); i++ )
     {
-        hierarchy.entries[i].obj->Intersection(ray, hierarchy.entries[i].part);
+        Hit hitInfo = hierarchy.entries[i].obj->Intersection(ray, hierarchy.entries[i].part);
+        if ( hitInfo.object && ( !closestInfo.object || hitInfo.dist < closestInfo.dist) )
+            closestInfo = hitInfo;
     }
-    return {};
+    return closestInfo;
 }
 
 // set up the initial view ray and call
@@ -42,9 +45,13 @@ void Render_World::Render_Pixel(const ivec2& pixel_index)
 
     //remember normalized
     Ray ray( camera.position , ( camera.World_Position( pixel_index ) - camera.position ).normalized() );
-
+#ifdef _DEPTH
+    double depth = Cast_Ray_Depth(ray,1);
+    camera.Set_Pixel(pixel_index,Pixel_Color(color));
+#else
     vec3 color=Cast_Ray(ray,1);
     camera.Set_Pixel(pixel_index,Pixel_Color(color));
+#endif
 }
 
 void Render_World::Render()
@@ -64,7 +71,16 @@ vec3 Render_World::Cast_Ray(const Ray& ray,int recursion_depth)
     vec3 color;
     TODO; // determine the color here
     Hit hitInfo = Closest_Intersection(ray);
+    if ( hitInfo.object )
+        color = vec3(1,1,1);
     return color;
+}
+
+double Render_World::Cast_Ray_Depth(const Ray& ray,int recursion_depth)
+{
+    //TODO; // determine the color heres
+    Hit hitInfo = Closest_Intersection(ray);
+    return hitInfo.dist;
 }
 
 void Render_World::Initialize_Hierarchy()
@@ -72,7 +88,7 @@ void Render_World::Initialize_Hierarchy()
     // TODO; // Fill in hierarchy.entries; there should be one entry for
     // each part of each object.
 
-    for( int i = 0; i < objects.size(); i++ )
+    for ( int i = 0; i < objects.size(); i++ )
     {
         Object* tmpObj = objects[i];
         for ( int j = 0; j < tmpObj->number_parts; j++ )

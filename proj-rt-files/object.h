@@ -8,7 +8,8 @@
 // t has to be bigger than small_t to register an intersection with a ray.  You
 // may need to tweak this value.
 // http://stackoverflow.com/questions/17688360/ray-tracing-shadow-bug
-static const double small_t = 1e-4;
+//static const double small_t = 1e-4;
+static const double small_t = 1e-10;
 extern bool debug_pixel;
 
 class Ray;

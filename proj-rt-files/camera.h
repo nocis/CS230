@@ -38,7 +38,13 @@ public:
     // Describes the pixels of the image
     ivec2 number_pixels; // number of pixels: x and y direction
     Pixel* colors; // Pixel data; row-major order
-    
+
+    //********************************************************
+    //Generate Depth image
+    Pixel* grayColors; // Gray Scale Pixel data; row-major order
+    double grayMax;
+    double grayMin;
+    //********************************************************
     Camera();
     ~Camera();
 
