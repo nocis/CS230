@@ -5,6 +5,7 @@
 // You may want to implement box.cpp first.
 void Hierarchy::Reorder_Entries()
 {
+    //BVH
     if(!entries.size()) return;
     TODO;
 }

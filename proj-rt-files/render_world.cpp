@@ -23,14 +23,26 @@ Render_World::~Render_World()
 Hit Render_World::Closest_Intersection(const Ray& ray)
 {
     TODO;
+    //bounding box collision detection
+    std::vector<int> results;
+    hierarchy.Intersection_Candidates(ray, results);
+    //ray casting
+    for( int i = 0; i < results.size(); i++ )
+    {
+        hierarchy.entries[i].obj->Intersection(ray, hierarchy.entries[i].part);
+    }
     return {};
 }
 
 // set up the initial view ray and call
 void Render_World::Render_Pixel(const ivec2& pixel_index)
 {
-    TODO; // set up the initial view ray here
-    Ray ray;
+    //TODO; // set up the initial view ray here
+    //Ray ray;
+
+    //remember normalized
+    Ray ray( camera.position , ( camera.World_Position( pixel_index ) - camera.position ).normalized() );
+
     vec3 color=Cast_Ray(ray,1);
     camera.Set_Pixel(pixel_index,Pixel_Color(color));
 }
@@ -51,14 +63,23 @@ vec3 Render_World::Cast_Ray(const Ray& ray,int recursion_depth)
 {
     vec3 color;
     TODO; // determine the color here
+    Hit hitInfo = Closest_Intersection(ray);
     return color;
 }
 
 void Render_World::Initialize_Hierarchy()
 {
-    TODO; // Fill in hierarchy.entries; there should be one entry for
+    // TODO; // Fill in hierarchy.entries; there should be one entry for
     // each part of each object.
 
+    for( int i = 0; i < objects.size(); i++ )
+    {
+        Object* tmpObj = objects[i];
+        for ( int j = 0; j < tmpObj->number_parts; j++ )
+        {
+            hierarchy.entries.push_back(Entry{tmpObj, j, tmpObj->Bounding_Box(j)});
+        }
+    }
     hierarchy.Reorder_Entries();
     hierarchy.Build_Tree();
 }
