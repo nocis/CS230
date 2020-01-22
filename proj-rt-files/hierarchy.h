@@ -49,5 +49,10 @@ public:
     // Return a list of candidates (indices into the entries list) whose
     // bounding boxes intersect the ray.
     void Intersection_Candidates(const Ray& ray, std::vector<int>& candidates) const;
+
+    static int axis;
+    double maxLength = 0.0;
+
+    static bool compare_help(const Entry &a, const Entry &b);
 };
 #endif

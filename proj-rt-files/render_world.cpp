@@ -84,7 +84,6 @@ void Render_World::Render()
                     camera.grayColors[j*camera.number_pixels[0]+i] = 0;
             }
         }
-
     }
 #endif
 }
@@ -97,7 +96,12 @@ vec3 Render_World::Cast_Ray(const Ray& ray,int recursion_depth)
     TODO; // determine the color here
     Hit hitInfo = Closest_Intersection(ray);
     if ( hitInfo.object )
-        color = vec3(1,1,1);
+    {
+        vec3 intersectionPoint = ray.Point( hitInfo.dist );
+        vec3 normal = hitInfo.object->Normal( intersectionPoint, hitInfo.part );
+        color = hitInfo.object->material_shader->Shade_Surface( ray, intersectionPoint, normal, recursion_depth );
+    }
+
     return color;
 }
 
@@ -118,7 +122,7 @@ void Render_World::Initialize_Hierarchy()
         Object* tmpObj = objects[i];
         for ( int j = 0; j < tmpObj->number_parts; j++ )
         {
-            hierarchy.entries.push_back(Entry{tmpObj, j, tmpObj->Bounding_Box(j)});
+            hierarchy.entries.push_back( Entry{ tmpObj, j, tmpObj->Bounding_Box(j) } );
         }
     }
     hierarchy.Reorder_Entries();
