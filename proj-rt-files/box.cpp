@@ -27,7 +27,7 @@ bool Box::Intersection(const Ray& ray) const
     double z_in = 0.0;
     double z_out = 0.0;
 
-    if ( dirx > 1e-10 )
+    if ( fabs( dirx ) > 1e-10 )
     {
         if ( dirx > 0 )
         {
@@ -43,7 +43,7 @@ bool Box::Intersection(const Ray& ray) const
     else if ( endx < x_left || endx > x_right )
         return false;
 
-    if ( diry > 1e-10 )
+    if ( fabs( diry ) > 1e-10 )
     {
         if ( diry > 0 )
         {
@@ -59,7 +59,7 @@ bool Box::Intersection(const Ray& ray) const
     else if ( endy < y_left || endy > y_right )
         return false;
 
-    if ( dirz > 1e-10 )
+    if ( fabs( dirz ) > 1e-10 )
     {
         if ( dirz > 0 )
         {
@@ -109,4 +109,18 @@ void Box::Make_Empty()
 {
     lo.fill(std::numeric_limits<double>::infinity());
     hi=-lo;
+}
+
+double Box::SurfaceArea()
+{
+    if ( hi[0] < lo[0] )
+        return 0;
+    double xLengthBox = hi[0] - lo[0];
+    double yLengthBox = hi[1] - lo[1];
+    double zLengthBox = hi[2] - lo[2];
+    return 2.0 *( xLengthBox * yLengthBox + xLengthBox * zLengthBox + zLengthBox * yLengthBox );
+}
+
+vec3 Box::Center() {
+    return ( hi + lo ) / 2.0;
 }

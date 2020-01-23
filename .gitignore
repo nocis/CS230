@@ -35,3 +35,5 @@
 /proj-rt-files/model/*
 /proj-rt-files/build/*
 /proj-rt-files/cmake-build-debug/*
+
+proj-rt-files/grading/

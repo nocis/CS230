@@ -22,5 +22,11 @@ public:
 
     // Create a box to which points can be correctly added using Include_Point.
     void Make_Empty();
+
+    //area
+    double SurfaceArea();
+
+    //center
+    vec3 Center();
 };
 #endif

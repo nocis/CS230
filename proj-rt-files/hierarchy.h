@@ -48,11 +48,19 @@ public:
 
     // Return a list of candidates (indices into the entries list) whose
     // bounding boxes intersect the ray.
-    void Intersection_Candidates(const Ray& ray, std::vector<int>& candidates) const;
+    void Intersection_Candidates(const Ray& ray, std::vector<int>& candidates, unsigned int root = 0 ) const;
 
     static int axis;
     double maxLength = 0.0;
-
+    double maxPos = 0.0;
+    double minPos = 0.0;
+    //helper for reorder
     static bool compare_help(const Entry &a, const Entry &b);
+
+    //Compute node bounding box
+    void Compute_Box( int start, int end, Box& box );
+
+    //Flattened hierarchy
+    std::vector<unsigned int> rightChildOffset;
 };
 #endif

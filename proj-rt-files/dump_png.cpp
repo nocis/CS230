@@ -116,7 +116,7 @@ void Dump_png_gray(double* data,int width,int height,const char* filename)
             row_pointers[i * width + j] = (unsigned short int) data[i * width + j];
 
 
-    for (int i=0; i<height; i++)
+    for (int i=height-1; i>=0; i--)
         png_write_row (png_ptr, (png_const_bytep)&row_pointers[i*width]);
     png_write_end (png_ptr, NULL);
     delete[] row_pointers;

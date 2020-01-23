@@ -28,9 +28,9 @@ Hit Render_World::Closest_Intersection(const Ray& ray)
     std::vector<int> results;
     hierarchy.Intersection_Candidates(ray, results);
     //ray casting
-    for ( int i = 0; i < results.size(); i++ )
+    for (int result : results)
     {
-        Hit hitInfo = hierarchy.entries[i].obj->Intersection(ray, hierarchy.entries[i].part);
+        Hit hitInfo = hierarchy.entries[result].obj->Intersection(ray, hierarchy.entries[result].part);
         if ( hitInfo.object && ( !closestInfo.object || hitInfo.dist < closestInfo.dist) )
             closestInfo = hitInfo;
     }
@@ -46,7 +46,7 @@ void Render_World::Render_Pixel(const ivec2& pixel_index)
     //remember normalized
     Ray ray( camera.position , ( camera.World_Position( pixel_index ) - camera.position ).normalized() );
 #ifdef _DEPTH
-    double depth = Cast_Ray_Depth(ray,1);
+    double depth = fmin( Cast_Ray_Depth(ray,1), 100 );
     if ( depth > small_t )
     {
         camera.grayMax = depth > camera.grayMax? depth : camera.grayMax;
@@ -76,7 +76,6 @@ void Render_World::Render()
         {
             for(int i=0;i<camera.number_pixels[0];i++)
             {
-                double tmp = camera.grayColors[j*camera.number_pixels[0]+i];
                 camera.grayColors[j*camera.number_pixels[0]+i] -= camera.grayMax;
                 camera.grayColors[j*camera.number_pixels[0]+i] /= ( camera.grayMin - camera.grayMax);
                 camera.grayColors[j*camera.number_pixels[0]+i] *= 65535.0;
@@ -117,9 +116,8 @@ void Render_World::Initialize_Hierarchy()
     // TODO; // Fill in hierarchy.entries; there should be one entry for
     // each part of each object.
 
-    for ( int i = 0; i < objects.size(); i++ )
+    for ( auto & tmpObj : objects )
     {
-        Object* tmpObj = objects[i];
         for ( int j = 0; j < tmpObj->number_parts; j++ )
         {
             hierarchy.entries.push_back( Entry{ tmpObj, j, tmpObj->Bounding_Box(j) } );
@@ -127,4 +125,14 @@ void Render_World::Initialize_Hierarchy()
     }
     hierarchy.Reorder_Entries();
     hierarchy.Build_Tree();
+    /*std::cout<<hierarchy.tree[0].Center()<<std::endl;
+    std::cout<<hierarchy.tree[1].Center()<<std::endl;
+    std::cout<<hierarchy.tree[2].Center()<<std::endl;
+    std::cout<<hierarchy.tree[3].Center()<<std::endl;
+    std::cout<<hierarchy.tree[4].Center()<<std::endl;
+    std::cout<<hierarchy.tree[5].Center()<<std::endl;
+    std::cout<<hierarchy.tree[6].Center()<<std::endl;
+
+    for ( auto & item : hierarchy.rightChildOffset )
+        std::cout<<item<<" ";*/
 }

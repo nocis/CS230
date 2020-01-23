@@ -46,13 +46,13 @@ ignore_line=re.compile('^\s*(#|$)')
 grade_line=re.compile('^(\S+)\s+(\S+)\s+(\S+)\s*$')
 gs=0
 try:
-    gs=open('grading-scheme.txt')
+    gs=open('./res/grading-scheme.txt')
 except:
     print("FAIL: could not open grading scheme.")
     exit()
 
 diff_parse=re.compile('diff: (.*)')
-grade_cmd=['./ray_tracer', '-i', 'file.txt', '-s', 'file.png', '-o', token+'.txt']
+grade_cmd=['./ray_tracer', '-i', './file.txt', '-s', './file.png', '-o', token+'.txt']
 
 for line in gs.readlines():
     if ignore_line.search(line):
@@ -69,8 +69,8 @@ for line in gs.readlines():
     pass_time = 0
     if not hashed_tests.has_key(file):
         timeout = 10
-        shutil.copyfile(test_dir+'/'+file+".txt", dir+"/file.txt")
-        shutil.copyfile(test_dir+'/'+file+".png", dir+"/file.png")
+        shutil.copyfile(test_dir+'/res/'+file+".txt", dir+"/file.txt")
+        shutil.copyfile(test_dir+'/res/'+file+".png", dir+"/file.png")
         if not run_command_with_timeout(grade_cmd, timeout):
             hashed_tests[file]="TIMEOUT"
         else:
