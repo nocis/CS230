@@ -22,6 +22,7 @@ Render_World::~Render_World()
 // to ensure that hit.dist>=small_t.
 Hit Render_World::Closest_Intersection(const Ray& ray)
 {
+    //sphere has no back face, triangle and plane have back face!
     TODO;
     //bounding box collision detection
     Hit closestInfo{0,0,0};
@@ -99,6 +100,10 @@ vec3 Render_World::Cast_Ray(const Ray& ray,int recursion_depth)
         vec3 intersectionPoint = ray.Point( hitInfo.dist );
         vec3 normal = hitInfo.object->Normal( intersectionPoint, hitInfo.part );
         color = hitInfo.object->material_shader->Shade_Surface( ray, intersectionPoint, normal, recursion_depth );
+    }
+    else
+    {
+        color = background_shader->Shade_Surface(Ray(),vec3(),vec3(),0);
     }
 
     return color;

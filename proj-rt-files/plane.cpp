@@ -14,6 +14,7 @@ Hit Plane::Intersection(const Ray& ray, int part) const
     double a = dot( ray.endpoint - x1, normal );
     double b = dot( ray.direction, normal );
 
+    //back face test
     if ( fabs(b) < 1e-10 )
         return {0,0,0};
 
