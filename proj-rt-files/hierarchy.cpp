@@ -11,27 +11,27 @@ bool Hierarchy::compare_help( const Entry& a, const Entry& b )
     return coord_a < coord_b;
 }
 
-void Hierarchy::Reorder_Entries()
+void Hierarchy::Reorder_Entries( unsigned int begin, unsigned int  end )
 {
     //BVH
-    if ( entries.empty() ) return;
+    if ( begin >= end ) return;
     //TODO;
-    double max_x = entries[0].box.hi[0];
-    double max_y = entries[0].box.hi[1];
-    double max_z = entries[0].box.hi[2];
+    double max_x = entries[begin].box.hi[0];
+    double max_y = entries[begin].box.hi[1];
+    double max_z = entries[begin].box.hi[2];
 
-    double min_x = entries[0].box.lo[0];
-    double min_y = entries[0].box.lo[1];
-    double min_z = entries[0].box.lo[2];
+    double min_x = entries[begin].box.lo[0];
+    double min_y = entries[begin].box.lo[1];
+    double min_z = entries[begin].box.lo[2];
 
-    for ( auto & item : entries )
+    for ( unsigned int i = begin; i < end; i++ )
     {
-        max_x = fmax( max_x, item.box.hi[0] );
-        max_y = fmax( max_y, item.box.hi[1] );
-        max_z = fmax( max_z, item.box.hi[2] );
-        min_x = fmin( min_x, item.box.lo[0] );
-        min_y = fmin( min_y, item.box.lo[1] );
-        min_z = fmin( min_z, item.box.lo[2] );
+        max_x = fmax( max_x, entries[i].box.hi[0] );
+        max_y = fmax( max_y, entries[i].box.hi[1] );
+        max_z = fmax( max_z, entries[i].box.hi[2] );
+        min_x = fmin( min_x, entries[i].box.lo[0] );
+        min_y = fmin( min_y, entries[i].box.lo[1] );
+        min_z = fmin( min_z, entries[i].box.lo[2] );
     }
 
     if ( ( max_x - min_x ) > fmax( max_y - min_y, max_z - min_z ) )
@@ -57,7 +57,7 @@ void Hierarchy::Reorder_Entries()
     }
 
     //sort by axis
-    std::sort( entries.begin(), entries.end(), compare_help);
+    std::sort( entries.begin() + begin, entries.begin() + end, compare_help);
 }
 
 void Hierarchy::Compute_Box( int start, int end, Box& box )
@@ -75,6 +75,8 @@ void Hierarchy::Compute_Box( int start, int end, Box& box )
 
     if ( start == end - 1 )
         return;
+
+    Reorder_Entries( start, end );
 
     double startAxis = entries[start].box.lo[axis];
     double endAxis = entries[end - 1].box.hi[axis];

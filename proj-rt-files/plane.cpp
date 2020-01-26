@@ -10,18 +10,17 @@ Hit Plane::Intersection(const Ray& ray, int part) const
 {
     //TODO;
     //dot(e+ut-p, normal) = 0
-
     double a = dot( ray.endpoint - x1, normal );
     double b = dot( ray.direction, normal );
 
-    //back face test
-    if ( fabs(b) < 1e-10 )
-        return {0,0,0};
+    //back face test or ray start at plane
+    if ( fabs(b) < 1e-10 || fabs(a) < 1e-10 )
+        return {nullptr, 0, 0};
 
     double t = a / -b;
 
     if ( t < 0 )
-        return {0,0,0};
+        return { nullptr, 0, 0 };
 
     return { this, t, part };
 }

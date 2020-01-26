@@ -17,6 +17,7 @@ public:
 
     Shader *background_shader;
     std::vector<Object*> objects;
+    std::vector<Shader*> shaders;
     std::vector<Light*> lights;
     vec3 ambient_color;
     double ambient_intensity;

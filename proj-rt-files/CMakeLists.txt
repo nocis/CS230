@@ -3,7 +3,7 @@ project(Raytracer)
 
 set(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_BUILD_TYPE "Debug")
-SET(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g")
+SET(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -fsanitize=address -fno-omit-frame-pointer -O0 -Wall -g")
 aux_source_directory(. SRCS)
 include_directories(/usr/include/libpng12)
 link_directories(/usr/local/lib)

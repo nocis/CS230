@@ -26,6 +26,11 @@ Shade_Surface(const Ray& ray,const vec3& intersection_point,
         if ( cosTheta < 0.0 )
             continue;
 
+        //shadow ray check
+        Hit shadowHit = world.Closest_Intersection( Ray( intersection_point, ( light->position - intersection_point ).normalized() ) );
+        if ( world.enable_shadows && shadowHit.object && shadowHit.dist < ( light->position - intersection_point ).magnitude() && shadowHit.dist > small_t )
+            continue;
+
         vec3 lightColor = light->Emitted_Light( light->position - intersection_point );
 
         //diffuse

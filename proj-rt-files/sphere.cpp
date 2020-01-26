@@ -19,7 +19,7 @@ Hit Sphere::Intersection(const Ray& ray, int part) const
 
     if ( root < 0 )
     {
-        return {0,0,0};
+        return {nullptr,0,0};
     }
     else if ( root < small_t )
     {
@@ -35,13 +35,12 @@ Hit Sphere::Intersection(const Ray& ray, int part) const
 
     if ( solution1 < 0.0 )
     {
-        std::cout<<"Wrong computation!"<<std::endl;
-        exit(0);
+        return { nullptr, 0, 0 };
     }
     else if ( solution2 > small_t )
         DIST = solution2;
     else
-        DIST = 0.0;
+        return { nullptr, 0, 0 };
 
     return {this, DIST, part };
 }

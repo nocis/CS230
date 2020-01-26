@@ -41,7 +41,7 @@ public:
     std::vector<Box> tree;
 
     // Reorder the entries vector so that adjacent entries tend to be nearby.
-    void Reorder_Entries();
+    void Reorder_Entries( unsigned int begin, unsigned int  end );
 
     // Populate tree from entries.
     void Build_Tree();

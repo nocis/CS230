@@ -16,6 +16,7 @@ Render_World::~Render_World()
     delete background_shader;
     for(size_t i=0;i<objects.size();i++) delete objects[i];
     for(size_t i=0;i<lights.size();i++) delete lights[i];
+    for(size_t i=0;i<shaders.size();i++) delete shaders[i];
 }
 
 // Find and return the Hit structure for the closest intersection.  Be careful
@@ -25,9 +26,9 @@ Hit Render_World::Closest_Intersection(const Ray& ray)
     //sphere has no back face, triangle and plane have back face!
     TODO;
     //bounding box collision detection
-    Hit closestInfo{0,0,0};
+    Hit closestInfo = { nullptr, 0, 0 };
     std::vector<int> results;
-    hierarchy.Intersection_Candidates(ray, results);
+    hierarchy.Intersection_Candidates( ray, results );
     //ray casting
     for (int result : results)
     {
@@ -128,16 +129,10 @@ void Render_World::Initialize_Hierarchy()
             hierarchy.entries.push_back( Entry{ tmpObj, j, tmpObj->Bounding_Box(j) } );
         }
     }
-    hierarchy.Reorder_Entries();
-    hierarchy.Build_Tree();
-    /*std::cout<<hierarchy.tree[0].Center()<<std::endl;
-    std::cout<<hierarchy.tree[1].Center()<<std::endl;
-    std::cout<<hierarchy.tree[2].Center()<<std::endl;
-    std::cout<<hierarchy.tree[3].Center()<<std::endl;
-    std::cout<<hierarchy.tree[4].Center()<<std::endl;
-    std::cout<<hierarchy.tree[5].Center()<<std::endl;
-    std::cout<<hierarchy.tree[6].Center()<<std::endl;
 
-    for ( auto & item : hierarchy.rightChildOffset )
+    //Reorder_Entries every time when compute box
+    //hierarchy.Reorder_Entries();
+    hierarchy.Build_Tree();
+    /*for ( auto & item : hierarchy.rightChildOffset )
         std::cout<<item<<" ";*/
 }

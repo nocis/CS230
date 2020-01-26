@@ -87,6 +87,7 @@ void Parse(Render_World& world,int& width,int& height,const char* test_file)
             std::map<std::string,vec3>::const_iterator c0=colors.find(s0);
             assert(c0!=colors.end());
             shaders[name]=new Flat_Shader(world,c0->second);
+            world.shaders.push_back( shaders[name] );
         }
         else if(item=="phong_shader")
         {
@@ -99,6 +100,7 @@ void Parse(Render_World& world,int& width,int& height,const char* test_file)
             assert(c1!=colors.end());
             assert(c2!=colors.end());
             shaders[name]=new Phong_Shader(world,c0->second,c1->second,c2->second,f0);
+            world.shaders.push_back( shaders[name] );
         }
         else if(item=="reflective_shader")
         {
@@ -107,6 +109,7 @@ void Parse(Render_World& world,int& width,int& height,const char* test_file)
             std::map<std::string,Shader*>::const_iterator sh=shaders.find(s0);
             assert(sh!=shaders.end());
             shaders[name]=new Reflective_Shader(world,sh->second,f0);
+            world.shaders.push_back( shaders[name] );
         }
         else if(item=="point_light")
         {
