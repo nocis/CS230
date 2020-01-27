@@ -42,7 +42,7 @@ Hit Render_World::Closest_Intersection(const Ray& ray)
 // set up the initial view ray and call
 void Render_World::Render_Pixel(const ivec2& pixel_index)
 {
-    //TODO; // set up the initial view ray here
+    TODO; // set up the initial view ray here
     //Ray ray;
 
     //remember normalized
@@ -56,8 +56,8 @@ void Render_World::Render_Pixel(const ivec2& pixel_index)
         camera.Set_Depth( pixel_index, depth );
     }
 #endif
-    vec3 color=Cast_Ray(ray,1);
-    camera.Set_Pixel(pixel_index,Pixel_Color(color));
+    vec3 color=Cast_Ray( ray,recursion_depth_limit );
+    camera.Set_Pixel( pixel_index,Pixel_Color( color ) );
 
 }
 
@@ -104,7 +104,7 @@ vec3 Render_World::Cast_Ray(const Ray& ray,int recursion_depth)
     }
     else
     {
-        color = background_shader->Shade_Surface(Ray(),vec3(),vec3(),0);
+        color = background_shader->Shade_Surface( Ray(), vec3(), vec3(), recursion_depth );
     }
 
     return color;

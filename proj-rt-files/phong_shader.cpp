@@ -11,6 +11,9 @@ Shade_Surface(const Ray& ray,const vec3& intersection_point,
     vec3 color;
     TODO; //determine the color
 
+    if ( !recursion_depth )
+        return color;
+
     //multiplication for color blend, addition for intensity accumulation
     //object has color (r,g,b) max value = 1 for every slot, which indicates how much value from light( (1,1,1) is white light)
     //will be preserved, so multiplication implies such process.

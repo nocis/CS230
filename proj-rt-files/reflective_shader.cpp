@@ -8,5 +8,16 @@ Shade_Surface(const Ray& ray,const vec3& intersection_point,
 {
     vec3 color;
     TODO; // determine the color
+
+    if ( !recursion_depth )
+        return color;
+
+    //c0 + reflectivity*(cr-c0)
+
+    //c0
+    color = shader->Shade_Surface( ray, intersection_point, normal, recursion_depth );
+
+    //cr
+    color += ( world.Cast_Ray( Ray( intersection_point, ( ray.direction + 2 * dot( -ray.direction, normal ) * normal ).normalized() ), --recursion_depth ) - color ) * reflectivity;
     return color;
 }
