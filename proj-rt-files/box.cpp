@@ -75,7 +75,7 @@ bool Box::Intersection(const Ray& ray) const
     else if ( endz < z_left || endz > z_right )
         return false;
 
-    return fmax( x_in, fmax( y_in, z_in ) ) < fmin( x_out, fmin( y_out, z_out ) );
+    return fmax( x_in, fmax( y_in, z_in ) ) <= fmin( x_out, fmin( y_out, z_out ) );
 }
 
 // Compute the smallest box that contains both *this and bb.

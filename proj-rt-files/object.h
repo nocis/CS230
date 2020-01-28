@@ -56,5 +56,7 @@ public:
     // If part>=0, return the bounding box for the specified part.
     // If part<0, return the bounding box for the whole object.
     virtual Box Bounding_Box(int part) const=0;
+
+    virtual bool cullingTest( vec3 cameraLook, int part ) const=0;
 };
 #endif

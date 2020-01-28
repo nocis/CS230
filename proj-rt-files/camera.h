@@ -1,6 +1,6 @@
 #ifndef __CAMERA_H__
 #define __CAMERA_H__
-#define _DEPTH 1
+//#define _DEPTH 1
 #define INF 0x3f3f3f3f
 #include <algorithm>
 #include "vec.h"

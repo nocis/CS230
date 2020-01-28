@@ -16,22 +16,24 @@ void Hierarchy::Reorder_Entries( unsigned int begin, unsigned int  end )
     //BVH
     if ( begin >= end ) return;
     //TODO;
-    double max_x = entries[begin].box.hi[0];
-    double max_y = entries[begin].box.hi[1];
-    double max_z = entries[begin].box.hi[2];
+    vec3 center = ( entries[begin].box.lo + entries[begin].box.hi ) / 2.0;
+    double max_x = center[0];
+    double max_y = center[1];
+    double max_z = center[2];
 
-    double min_x = entries[begin].box.lo[0];
-    double min_y = entries[begin].box.lo[1];
-    double min_z = entries[begin].box.lo[2];
+    double min_x = center[0];
+    double min_y = center[1];
+    double min_z = center[2];
 
     for ( unsigned int i = begin; i < end; i++ )
     {
-        max_x = fmax( max_x, entries[i].box.hi[0] );
-        max_y = fmax( max_y, entries[i].box.hi[1] );
-        max_z = fmax( max_z, entries[i].box.hi[2] );
-        min_x = fmin( min_x, entries[i].box.lo[0] );
-        min_y = fmin( min_y, entries[i].box.lo[1] );
-        min_z = fmin( min_z, entries[i].box.lo[2] );
+        vec3 tmpCenter = ( entries[i].box.lo + entries[i].box.hi ) / 2.0;
+        max_x = fmax( max_x, tmpCenter[0] );
+        max_y = fmax( max_y, tmpCenter[1] );
+        max_z = fmax( max_z, tmpCenter[2] );
+        min_x = fmin( min_x, tmpCenter[0] );
+        min_y = fmin( min_y, tmpCenter[1] );
+        min_z = fmin( min_z, tmpCenter[2] );
     }
 
     if ( ( max_x - min_x ) > fmax( max_y - min_y, max_z - min_z ) )
@@ -57,10 +59,10 @@ void Hierarchy::Reorder_Entries( unsigned int begin, unsigned int  end )
     }
 
     //sort by axis
-    std::sort( entries.begin() + begin, entries.begin() + end, compare_help);
+    std::sort( entries.begin() + begin, entries.begin() + end, compare_help );
 }
 
-void Hierarchy::Compute_Box( int start, int end, Box& box )
+void Hierarchy::Compute_Box( unsigned int start, unsigned int end, Box& box )
 {
     TODO;
     if ( start >= end )
@@ -68,23 +70,27 @@ void Hierarchy::Compute_Box( int start, int end, Box& box )
 
     if ( box.lo[0] <= box.hi[0] )
     {
-        tree.push_back( box );
-        rightChildOffset.push_back(0);
+        tree[tree_size] = box;
+        rightChildOffset[tree_size] = 0;
+        tree_size++;
     }
 
-
     if ( start == end - 1 )
+    {
+        leaves[ tree_size - 1 ] = leavesCount;
+        leavesCount++;
         return;
+    }
 
     Reorder_Entries( start, end );
 
-    double startAxis = entries[start].box.lo[axis];
-    double endAxis = entries[end - 1].box.hi[axis];
+    double startAxis = ( entries[start].box.lo[axis] + entries[start].box.hi[axis] ) / 2.0 - small_t;
+    double endAxis = ( entries[end - 1].box.lo[axis] + entries[end - 1].box.hi[axis] ) / 2.0 + small_t;
     double lengthAxis = endAxis - startAxis;
     double strideAxis = lengthAxis / 4.0;
 
     double expectationMin = 0x3f3f3f3f;
-    int expectationDivide = 0x3f3f3f3f;
+    unsigned int expectationDivide = 0x3f3f3f3f;
 
     int leftCount = 0;
     int rightCount = 0;
@@ -96,12 +102,12 @@ void Hierarchy::Compute_Box( int start, int end, Box& box )
         leftBox.Make_Empty();
         rightBox.Make_Empty();
 
-        int divide = start;
+        unsigned int divide = start;
 
         leftCount = 0;
         rightCount = 0;
 
-        for ( int j = start; j < end; j++ )
+        for ( unsigned int j = start; j < end; j++ )
         {
             double entryCenter = ( entries[j].box.hi[axis] + entries[j].box.lo[axis] ) / 2.0 ;
 
@@ -128,20 +134,21 @@ void Hierarchy::Compute_Box( int start, int end, Box& box )
 
     leftBox.Make_Empty();
     rightBox.Make_Empty();
-
+    //std::cout<<expectationDivide<<std::endl;
     if ( ( expectationDivide == 0x3f3f3f3f || expectationDivide == start || expectationDivide == end ) && start < end )
         expectationDivide = ( start + end ) / 2;
 
-    for ( int i = start; i < end; i++ )
+    for ( unsigned int i = start; i < end; i++ )
     {
         if ( i < expectationDivide )
             leftBox = leftBox.Union( entries[i].box );
         else
             rightBox = rightBox.Union( entries[i].box );
     }
-    unsigned int parentIndex = tree.size() - 1;
+
+    unsigned int parentIndex = tree_size - 1;
     Compute_Box( start, expectationDivide, leftBox);
-    unsigned int rightChildIndex = tree.size();
+    unsigned int rightChildIndex = tree_size;
     Compute_Box( expectationDivide, end, rightBox);
     rightChildOffset[parentIndex] = rightChildIndex;
 }
@@ -151,6 +158,8 @@ void Hierarchy::Build_Tree()
 {
     if ( entries.empty() ) return;
     TODO;
+    tree_size = 0;
+    leavesCount = 0;
     Box box;
     box.Make_Empty();
     for ( auto & item : entries )
@@ -158,7 +167,7 @@ void Hierarchy::Build_Tree()
         box = box.Union(item.box);
     }
 
-    Compute_Box( 0, entries.size(), box );
+    Compute_Box( 0, entries_size, box );
 }
 
 // Return a list of candidates (indices into the entries list) whose
@@ -172,10 +181,7 @@ void Hierarchy::Intersection_Candidates( const Ray& ray, std::vector<int>& candi
 
     if ( !rightChildOffset[root] )
     {
-        int leafIndex = 0;
-        for ( unsigned int i = 0; i <= root; i++ )
-            if ( !rightChildOffset[i] ) leafIndex++;
-        candidates.push_back( leafIndex - 1 );
+        candidates.push_back( leaves[root] );
         return;
     }
 

@@ -32,8 +32,8 @@ Hit Render_World::Closest_Intersection(const Ray& ray)
     //ray casting
     for (int result : results)
     {
-        Hit hitInfo = hierarchy.entries[result].obj->Intersection(ray, hierarchy.entries[result].part);
-        if ( hitInfo.object && ( !closestInfo.object || hitInfo.dist < closestInfo.dist) )
+        Hit hitInfo = hierarchy.entries[result].obj->Intersection( ray, hierarchy.entries[result].part );
+        if ( hitInfo.object && ( !closestInfo.object || hitInfo.dist < closestInfo.dist ) )
             closestInfo = hitInfo;
     }
     return closestInfo;
@@ -58,7 +58,7 @@ void Render_World::Render_Pixel(const ivec2& pixel_index)
 #endif
     vec3 color=Cast_Ray( ray,recursion_depth_limit );
     camera.Set_Pixel( pixel_index,Pixel_Color( color ) );
-
+    //std::cout<<pixel_index<<std::endl;
 }
 
 void Render_World::Render()
@@ -121,15 +121,30 @@ void Render_World::Initialize_Hierarchy()
 {
     // TODO; // Fill in hierarchy.entries; there should be one entry for
     // each part of each object.
-
+    unsigned int tmpSize = 0;
+    for ( auto & tmpObj : objects )
+    {
+        tmpSize += tmpObj->number_parts;
+    }
+    //allocate before to improve performance
+    hierarchy.entries.resize( tmpSize );
+    hierarchy.tree.resize( 2 * tmpSize - 1 );
+    hierarchy.rightChildOffset.resize( 2 * tmpSize - 1 );
+    hierarchy.leaves.resize( 2 * tmpSize - 1 );
+    hierarchy.entries_size = 0;
     for ( auto & tmpObj : objects )
     {
         for ( int j = 0; j < tmpObj->number_parts; j++ )
         {
-            hierarchy.entries.push_back( Entry{ tmpObj, j, tmpObj->Bounding_Box(j) } );
+            //backface culling
+            if ( j < 1 || tmpObj->cullingTest( camera.look_vector, j ) )
+            {
+                hierarchy.entries[ hierarchy.entries_size ] = Entry{ tmpObj, j, tmpObj->Bounding_Box(j) };
+                hierarchy.entries_size++;
+            }
+
         }
     }
-
     //Reorder_Entries every time when compute box
     //hierarchy.Reorder_Entries();
     hierarchy.Build_Tree();

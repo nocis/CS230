@@ -36,9 +36,11 @@ class Hierarchy
 public:
     // List of primitives (or parts of primitives) that can be intersected
     std::vector<Entry> entries;
+    unsigned int entries_size;
 
     // Flattened hierarchy
     std::vector<Box> tree;
+    unsigned int tree_size;
 
     // Reorder the entries vector so that adjacent entries tend to be nearby.
     void Reorder_Entries( unsigned int begin, unsigned int  end );
@@ -48,7 +50,7 @@ public:
 
     // Return a list of candidates (indices into the entries list) whose
     // bounding boxes intersect the ray.
-    void Intersection_Candidates(const Ray& ray, std::vector<int>& candidates, unsigned int root = 0 ) const;
+    void Intersection_Candidates( const Ray& ray, std::vector<int>& candidates, unsigned int root = 0 ) const;
 
     static int axis;
     double maxLength = 0.0;
@@ -58,9 +60,13 @@ public:
     static bool compare_help(const Entry &a, const Entry &b);
 
     //Compute node bounding box
-    void Compute_Box( int start, int end, Box& box );
+    void Compute_Box( unsigned int start, unsigned int end, Box& box );
 
     //Flattened hierarchy
     std::vector<unsigned int> rightChildOffset;
+
+    //accelerate structure
+    std::vector<unsigned int> leaves;
+    unsigned int leavesCount;
 };
 #endif

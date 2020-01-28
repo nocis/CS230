@@ -22,5 +22,6 @@ public:
     bool Intersect_Triangle(const Ray& ray, int tri, double& dist) const;
     void Read_Obj(const char* file);
     Box Bounding_Box(int part) const override;
+    virtual bool cullingTest( vec3 cameraLook, int part ) const override;
 };
 #endif

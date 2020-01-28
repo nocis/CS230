@@ -62,3 +62,4 @@ Box Sphere::Bounding_Box(int part) const
     box.lo = center - vec3( radius, radius, radius );
     return box;
 }
+
