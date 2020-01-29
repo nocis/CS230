@@ -15,6 +15,6 @@ public:
     virtual Hit Intersection(const Ray& ray, int part) const override;
     virtual vec3 Normal(const vec3& point, int part) const override;
     virtual Box Bounding_Box(int part) const override;
-    virtual bool cullingTest( vec3 cameraLook, int part ) const override{}
+    virtual bool cullingTest( vec3 cameraLook, int part ) const override{ return true; }
 };
 #endif

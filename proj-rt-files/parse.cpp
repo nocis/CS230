@@ -30,6 +30,7 @@ void Parse(Render_World& world,int& width,int& height,const char* test_file)
     std::map<std::string,Object*> objects;
     std::map<std::string,Shader*> shaders;
 
+    world.enable_backface = true;
     while(fgets(buff, sizeof(buff), F))
     {
         std::stringstream ss(buff);
@@ -104,6 +105,7 @@ void Parse(Render_World& world,int& width,int& height,const char* test_file)
         }
         else if(item=="reflective_shader")
         {
+            world.enable_backface = false;
             ss>>name>>s0>>f0;
             assert(ss);
             std::map<std::string,Shader*>::const_iterator sh=shaders.find(s0);

@@ -29,6 +29,8 @@ Hit Render_World::Closest_Intersection(const Ray& ray)
     Hit closestInfo = { nullptr, 0, 0 };
     std::vector<int> results;
     hierarchy.Intersection_Candidates( ray, results );
+
+    //std::cout<<"        "<<std::endl;
     //ray casting
     for (int result : results)
     {
@@ -137,17 +139,18 @@ void Render_World::Initialize_Hierarchy()
         for ( int j = 0; j < tmpObj->number_parts; j++ )
         {
             //backface culling
-            if ( j < 1 || tmpObj->cullingTest( camera.look_vector, j ) )
+            if ( j < 1 || tmpObj->cullingTest( camera.look_vector, j ) || !enable_backface )
             {
                 hierarchy.entries[ hierarchy.entries_size ] = Entry{ tmpObj, j, tmpObj->Bounding_Box(j) };
                 hierarchy.entries_size++;
             }
-
         }
     }
     //Reorder_Entries every time when compute box
     //hierarchy.Reorder_Entries();
     hierarchy.Build_Tree();
-    /*for ( auto & item : hierarchy.rightChildOffset )
+    /*for ( auto & item : hierarchy.tree )
+        std::cout<<item.lo<<" "<<item.hi<<std::endl;
+    for ( auto & item : hierarchy.rightChildOffset )
         std::cout<<item<<" ";*/
 }

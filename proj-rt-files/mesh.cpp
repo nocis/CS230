@@ -110,6 +110,7 @@ Box Mesh::Bounding_Box(int part) const
 {
     Box b;
     //TODO;
+    b.Make_Empty();
     b.Include_Point( vertices[ triangles[part][0] ] );
     b.Include_Point( vertices[ triangles[part][1] ] );
     b.Include_Point( vertices[ triangles[part][2] ] );

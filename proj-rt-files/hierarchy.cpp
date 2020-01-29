@@ -36,14 +36,14 @@ void Hierarchy::Reorder_Entries( unsigned int begin, unsigned int  end )
         min_z = fmin( min_z, tmpCenter[2] );
     }
 
-    if ( ( max_x - min_x ) > fmax( max_y - min_y, max_z - min_z ) )
+    if ( ( max_x - min_x ) > fmax( max_y - min_y, max_z - min_z ) - small_t )
     {
         axis = 0;
         maxLength = max_x - min_x;
         maxPos = max_x;
         minPos = min_x;
     }
-    else if ( ( max_y - min_y ) > fmax( max_x - min_x, max_z - min_z ) )
+    else if ( ( max_y - min_y ) > fmax( max_x - min_x, max_z - min_z ) - small_t )
     {
         axis = 1;
         maxLength = max_y - min_y;
@@ -125,7 +125,7 @@ void Hierarchy::Compute_Box( unsigned int start, unsigned int end, Box& box )
         }
 
         double expectationCost = leftBox.SurfaceArea() / box.SurfaceArea() * leftCount + rightBox.SurfaceArea() / box.SurfaceArea() * rightCount;
-        if ( expectationCost < expectationMin - 1e-8)
+        if ( expectationCost < expectationMin - small_t )
         {
             expectationDivide = divide + 1;
             expectationMin = expectationCost;
@@ -181,6 +181,7 @@ void Hierarchy::Intersection_Candidates( const Ray& ray, std::vector<int>& candi
 
     if ( !rightChildOffset[root] )
     {
+        //std::cout<<entries[leaves[root]].part<<":"<<entries[leaves[root]].box.lo<<"         "<<entries[leaves[root]].box.hi<<std::endl;
         candidates.push_back( leaves[root] );
         return;
     }
@@ -190,7 +191,6 @@ void Hierarchy::Intersection_Candidates( const Ray& ray, std::vector<int>& candi
     {
         Intersection_Candidates( ray, candidates, root + 1 );
     }
-
 
     //travel right
     Intersection_Candidates( ray, candidates, rightChildOffset[root] );
