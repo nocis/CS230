@@ -19,6 +19,7 @@ void Mesh::Read_Obj(const char* file)
     std::string line;
     ivec3 e;
     vec3 v;
+    vec2 tmpUV;
     box.Make_Empty();
     while(fin)
     {
@@ -34,6 +35,17 @@ void Mesh::Read_Obj(const char* file)
         {
             for(int i=0;i<3;i++) e[i]--;
             triangles.push_back(e);
+        }
+
+        if(sscanf(line.c_str(), "f %d/%d %d/%d %d/%d", &e[0], &e[0], &e[1], &e[1], &e[2], &e[2] ) == 6)
+        {
+            for(int i=0;i<3;i++) e[i]--;
+            triangles.push_back(e);
+        }
+
+        if(sscanf(line.c_str(), "vt %lg %lg", &tmpUV[0], &tmpUV[1] ) == 2 )
+        {
+            UV.push_back(tmpUV);
         }
     }
     number_parts=triangles.size();
@@ -123,4 +135,48 @@ bool Mesh::cullingTest(vec3 cameraLook, int part) const
     vec3 C_A = vertices[ triangles[part][2] ] - vertices[ triangles[part][0] ];
     vec3 up = cross( B_A, C_A );
     return dot( up, cameraLook ) < 0;
+}
+
+vec3 Mesh::sampleTexture( int part, vec3 point, unsigned int* text ) const
+{
+    vec3 color[3];
+    unsigned int w = UV[ triangles[part][0] ][0] * 1024;
+    unsigned int h = UV[ triangles[part][0] ][1] * 1024;
+    unsigned int pixel = text[ h * 1024 + w ];
+    color[0] = vec3(pixel>>24,(pixel>>16)&0xff,(pixel>>8)&0xff)/255.;
+
+    w = UV[ triangles[part][1] ][0] * 1024;
+    h = UV[ triangles[part][1] ][1] * 1024;
+    pixel = text[ h * 1024 + w ];
+    color[1] = vec3(pixel>>24,(pixel>>16)&0xff,(pixel>>8)&0xff)/255.;
+
+    w = UV[ triangles[part][2] ][0] * 1024;
+    h = UV[ triangles[part][2] ][1] * 1024;
+    pixel = text[ h * 1024 + w ];
+    color[2] = vec3(pixel>>24,(pixel>>16)&0xff,(pixel>>8)&0xff)/255.;
+
+    return barycentricColor( part, point, color );
+}
+
+vec3 Mesh::barycentricColor( int part, vec3 point, vec3 color[] ) const
+{
+    // (P - A) = b( B - A ) + c( C - A ) - su
+    ivec3 triIdx = triangles[part];
+    vec3 A = vertices[ triIdx[0] ];
+    vec3 B_A = vertices[ triIdx[1] ] - A;
+    vec3 C_A = vertices[ triIdx[2] ] - A;
+    vec3 P_A = point - A;
+
+    //dot( ( u x v ), u ) = dot( ( u x v ), v ) = 0, order is crucial
+    vec3 VxW = cross( B_A, C_A );
+    vec3 UxV = cross( B_A, P_A );
+    vec3 WxU = cross( P_A, C_A );
+
+    //volume
+
+    double a = UxV.magnitude() / VxW.magnitude();
+    double b = WxU.magnitude() / VxW.magnitude();
+    double c = 1 - a - b;
+
+    return color[0]*c + color[1]*b + color[2]*a;
 }

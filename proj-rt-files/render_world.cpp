@@ -7,7 +7,7 @@
 extern bool disable_hierarchy;
 
 Render_World::Render_World()
-    :background_shader(0),ambient_intensity(0),enable_shadows(true),
+    :background_shader(0), skybox( nullptr ), ambient_intensity(0), enable_shadows(true),
     recursion_depth_limit(3)
 {}
 
@@ -17,6 +17,8 @@ Render_World::~Render_World()
     for(size_t i=0;i<objects.size();i++) delete objects[i];
     for(size_t i=0;i<lights.size();i++) delete lights[i];
     for(size_t i=0;i<shaders.size();i++) delete shaders[i];
+    for(size_t i=0;i<textures.size();i++) delete [] textures[i];
+    delete [] skybox;
 }
 
 // Find and return the Hit structure for the closest intersection.  Be careful
@@ -24,7 +26,7 @@ Render_World::~Render_World()
 Hit Render_World::Closest_Intersection(const Ray& ray)
 {
     //sphere has no back face, triangle and plane have back face!
-    TODO;
+    //TODO;
     //bounding box collision detection
     Hit closestInfo = { nullptr, 0, 0 };
     std::vector<int> results;
@@ -44,7 +46,7 @@ Hit Render_World::Closest_Intersection(const Ray& ray)
 // set up the initial view ray and call
 void Render_World::Render_Pixel(const ivec2& pixel_index)
 {
-    TODO; // set up the initial view ray here
+    //TODO; // set up the initial view ray here
     //Ray ray;
 
     //remember normalized
@@ -96,17 +98,118 @@ void Render_World::Render()
 vec3 Render_World::Cast_Ray(const Ray& ray,int recursion_depth)
 {
     vec3 color;
-    TODO; // determine the color here
+    //TODO; // determine the color here
     Hit hitInfo = Closest_Intersection(ray);
     if ( hitInfo.object )
     {
         vec3 intersectionPoint = ray.Point( hitInfo.dist );
         vec3 normal = hitInfo.object->Normal( intersectionPoint, hitInfo.part );
         color = hitInfo.object->material_shader->Shade_Surface( ray, intersectionPoint, normal, recursion_depth );
+        if ( !textures.empty() && textures[ hitInfo.object->texture_id ] )
+        {
+            color *= hitInfo.object->sampleTexture( hitInfo.part, intersectionPoint, textures[ hitInfo.object->texture_id ] );
+        }
     }
     else
     {
-        color = background_shader->Shade_Surface( Ray(), vec3(), vec3(), recursion_depth );
+        if ( !skybox )
+            color = background_shader->Shade_Surface( Ray(), vec3(), vec3(), recursion_depth );
+        else
+        {
+            vec3 dir =ray.direction;
+            double a = dir[0];
+            double b = dir[1];
+            double c = dir[2];
+
+            int axis = 0;
+            double length = 0;
+
+            if ( fabs( a ) > fmax( fabs( b ), fabs( c ) ) )
+            {
+                if ( a > 0 )
+                    axis = 1;
+                else
+                    axis = -1;
+
+                length = fabs(a);
+            }
+            else if ( fabs( b ) > fmax( fabs( a ), fabs( c ) ) )
+            {
+                if ( b > 0 )
+                    axis = 2;
+                else
+                    axis = -2;
+
+                length = fabs(b);
+            }
+            else if ( fabs( c ) > fmax( fabs( b ), fabs( a ) ) )
+            {
+                if ( c > 0 )
+                    axis = 3;
+                else
+                    axis = -3;
+
+                length = fabs(c);
+            }
+
+            a /= length;
+            b /= length;
+            c /= length;
+
+            a += 1;
+            b += 1;
+            c += 1;
+
+            a *= 512;
+            b *= 512;
+            c *= 512;
+
+            int u = 0;
+            int v = 0;
+            ivec2 leftbottomPos;
+            switch(axis)
+            {
+                //right
+                case 1:
+                    leftbottomPos = { 3072,1024 };
+                    u = c;
+                    v = b;
+                    break;
+                //left
+                case -1:
+                    leftbottomPos = { 2048,1024 };
+                    u = -c;
+                    v = b;
+                    break;
+                //up
+                case 2:
+                    leftbottomPos = { 2048,2048 };
+                    u = -c;
+                    v = a;
+                    break;
+                //down
+                case -2:
+                    leftbottomPos = { 2048,1024 };
+                    u = -c;
+                    v = -a;
+                    break;
+                //back
+                case 3:
+                    leftbottomPos = { 1024,1024 };
+                    u = -a;
+                    v = b;
+                    break;
+                //front
+                case -3:
+                    leftbottomPos = { 2048,1024 };
+                    u = a;
+                    v = b;
+                    break;
+            }
+
+            Pixel pix = skybox[ ( leftbottomPos[1] + v ) * 4096 + ( leftbottomPos[0] + u ) ];
+            color = From_Pixel(pix);
+        }
     }
 
     return color;

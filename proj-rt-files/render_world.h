@@ -19,6 +19,8 @@ public:
     std::vector<Object*> objects;
     std::vector<Shader*> shaders;
     std::vector<Light*> lights;
+    std::vector<Pixel*> textures;
+    Pixel* skybox;
     vec3 ambient_color;
     double ambient_intensity;
 

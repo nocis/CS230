@@ -31,7 +31,7 @@ public:
     // the number of parts that this object contains.
     int number_parts;
 
-    Object() :material_shader(0), number_parts(1) {}
+    Object() :material_shader(0), number_parts(1), texture_id(0) {}
     virtual ~Object() {}
 
     // Check for an intersection against the ray.  If there was an
@@ -57,6 +57,12 @@ public:
     // If part<0, return the bounding box for the whole object.
     virtual Box Bounding_Box(int part) const=0;
 
+    //backface culling
     virtual bool cullingTest( vec3 cameraLook, int part ) const=0;
+
+    //texture id
+    unsigned int texture_id;
+
+    virtual vec3 sampleTexture( int part, vec3 point, unsigned int* text ) const = 0;
 };
 #endif

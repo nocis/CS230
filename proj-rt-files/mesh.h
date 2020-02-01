@@ -11,6 +11,7 @@ class Mesh : public Object
 {
     std::vector<vec3> vertices;
     std::vector<ivec3> triangles;
+    std::vector<vec2> UV;
     Box box;
     
 public:
@@ -22,6 +23,8 @@ public:
     bool Intersect_Triangle(const Ray& ray, int tri, double& dist) const;
     void Read_Obj(const char* file);
     Box Bounding_Box(int part) const override;
-    virtual bool cullingTest( vec3 cameraLook, int part ) const override;
+    bool cullingTest( vec3 cameraLook, int part ) const override;
+    vec3 sampleTexture( int part, vec3 point, unsigned int* text ) const override;
+    vec3 barycentricColor( int part, vec3 point, vec3 color[] ) const;
 };
 #endif

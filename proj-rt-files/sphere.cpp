@@ -1,6 +1,7 @@
 #include "sphere.h"
 #include "ray.h"
-
+#define PI2 6.283185
+#define PI 3.141592
 // Determine if the ray intersects with the sphere
 Hit Sphere::Intersection(const Ray& ray, int part) const
 {
@@ -61,5 +62,20 @@ Box Sphere::Bounding_Box(int part) const
     box.hi = center + vec3( radius, radius, radius );
     box.lo = center - vec3( radius, radius, radius );
     return box;
+}
+
+vec3 Sphere::sampleTexture(int part, vec3 point, unsigned int *text) const
+{
+    vec3 r = (point - center).normalized();
+    double U = atan2( r[0] ,r[2] ) +  + PI / 2.0;
+    double V = asin( r[1] ) + PI / 2.0;
+
+    if ( r[2] < 0 )
+        U += PI;
+
+    U /= 2 * PI;
+    V /= PI;
+    unsigned int pixel = text[ (int) ( V * 1024 ) * 1024 + (int) ( U * 1024 ) % 1024 ];
+    return vec3(pixel>>24,(pixel>>16)&0xff,(pixel>>8)&0xff)/255.;;
 }
 
