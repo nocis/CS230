@@ -37,3 +37,5 @@
 /proj-rt-files/cmake-build-debug/*
 
 proj-rt-files/grading/
+
+*.zip
