@@ -296,9 +296,6 @@ void clip_triangle_axis( driver_state& state, const data_geometry* in[3], int ax
             weightP = std::abs( disB ) / std::abs( disA + disB );
             weightQ = std::abs( disC ) / std::abs( disA + disC );
 
-            //weightP = std::abs( faceValue - B.gl_Position[axis] / B.gl_Position[3] ) / std::abs( A.gl_Position[axis] / A.gl_Position[3] - B.gl_Position[axis] / B.gl_Position[3] );
-            //weightQ = std::abs( faceValue - C.gl_Position[axis] / C.gl_Position[3] ) / std::abs( A.gl_Position[axis] / A.gl_Position[3] - C.gl_Position[axis] / C.gl_Position[3] );
-
             vertices_interpolation_perspective( state, P, A, B, weightP, in );
             vertices_interpolation_perspective( state, Q, A, C, weightQ, in );
 
@@ -488,11 +485,6 @@ void rasterize_triangle(driver_state& state, const data_geometry* in[3])
     // we can only do clipping with far and near face but simply discard those who are completely out of side faces
     // and using AABB box to narrow down the range of fragments
 
-    int left = std::max( std::min( std::min( A_x, B_x ), C_x ), 0.0 );
-    int right = std::min( std::max( std::max( A_x, B_x ), C_x ), (double)state.image_width );
-    int bottom = std::max( std::min( std::min( A_y, B_y ), C_y ), 0.0 );
-    int top = std::min( std::max( std::max( A_y, B_y ), C_y ), (double)state.image_height );
-
     double triWidth = std::abs( floor( A_x ) - ceil( B_x ) );
     double triHeight = std::abs( floor( A_y ) - ceil( C_y ) );
     int strideX = ( C_y - A_y ) > 0 ? 1 : -1;
@@ -564,16 +556,6 @@ void rasterize_triangle(driver_state& state, const data_geometry* in[3])
                 }
                 delete[] pixelData;
             }
-            /*else
-            {
-                if ( pixelPos < state.image_width* state.image_width && pixelPos > 0 && state.image_depth[ pixelPos ] == 1 )
-                {
-                    std::cout << aij << bij<< cij<< " "<<P_y <<" "<< P_x + j * strideX << std::endl;
-                    //state.image_color[ pixelPos ] = 0x66ffccff;
-                    //state.image_depth[ pixelPos ] = 2;
-                }
-
-            }*/
         }
 
         triWidth += ( kBC_x - kAC_x );
@@ -593,44 +575,5 @@ void rasterize_triangle(driver_state& state, const data_geometry* in[3])
         b += strideY * dbY;
         c += strideY * dcY;
     }
-
-    /*for ( int j = bottom + 1; j <= top; j++ )
-    {
-        for ( int i = left; i <= right; i++ )
-        {
-
-            float partialArea = ( A_x * j + i * C_y + C_x * A_y - A_x * C_y - i * A_y - C_x * j ) ;
-            b = partialArea / totalArea;
-            partialArea = ( A_x * B_y + B_x * j + i * A_y - A_x * j - B_x * A_y - i * B_y ) ;
-            c = partialArea / totalArea;
-            a = 1 - b - c;
-
-            if ( a >= 0 && b >= 0 && c >= 0 )
-            {
-                float *pixelData = new float[state.floats_per_vertex];
-                data_geometry pixel;
-                data_output pixelInfo;
-                pixel.data = pixelData;
-
-                barycentrical_interpolation( state, pixel, A, B, C, a, b, c );
-
-                state.fragment_shader({pixel.data}, pixelInfo, state.uniform_data);
-                pixelInfo.output_color *= 255.0;
-
-                //z-test
-                int pixelx = (int)( P_x + j * strideX );
-                //std::cout << pixelx<<std::endl;
-
-                if ( pixel.gl_Position[2] <= state.image_depth[ (int)j * state.image_width + i ] )
-                {
-                    state.image_color[ (int)j * state.image_width + i ] = make_pixel(pixelInfo.output_color[0],
-                                                                                            pixelInfo.output_color[1],
-                                                                                            pixelInfo.output_color[2]);
-                    state.image_depth[ (int)j * state.image_width + i ] = pixel.gl_Position[2];
-                }
-                delete[] pixelData;
-            }
-        }
-    }*/
     //std::cout<<"TODO: implement rasterization"<<std::endl;
 }
