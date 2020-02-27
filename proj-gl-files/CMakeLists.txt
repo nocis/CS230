@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 2.6)
+project(driver)
+add_executable(driver main.cpp parse.cpp dump_png.cpp driver_state.cpp shaders.cpp)
+target_link_libraries(driver png)
+if(CMAKE_COMPILER_IS_GNUCXX)
+    add_definitions(-std=c++11)
+endif()

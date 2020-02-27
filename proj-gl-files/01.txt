@@ -1,0 +1,8 @@
+size 500 500
+vertex_shader trivial
+fragment_shader white
+vertex_data fff
+v 0.25 0.25 0
+v 0.75 0.25 0
+v 0.75 0.75 0
+render triangle

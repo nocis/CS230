@@ -1,0 +1,18 @@
+size 500 500
+vertex_shader trivial
+fragment_shader white
+vertex_data fff
+v -1 -1 0
+v 0 -1 0
+v 1 -1 0
+v -1 0 0
+v 0 0 0
+v 1 0 0
+v -1 1 0
+v 0 1 0
+v 1 1 0
+f 0 1 3
+f 2 1 5
+f 6 7 3
+f 8 7 5
+render indexed

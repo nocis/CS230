@@ -1,0 +1,13 @@
+size 500 500
+vertex_shader trivial
+fragment_shader white
+vertex_data fff
+v 0.8 0.8 0
+v 0.8 0.6 0
+v -0.8 0.8 0
+v -0.6 0.6 0
+v -0.8 -0.8 0
+v -0.6 -0.6 0
+v 0.8 -0.8 0
+v 0.8 -0.6 0
+render strip

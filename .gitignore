@@ -39,3 +39,11 @@
 proj-rt-files/grading/
 
 *.zip
+
+microfacet.png
+
+proj-gl-files/.idea/
+
+proj-gl-files/cmake-build-debug/
+
+proj-gl-files/grading/

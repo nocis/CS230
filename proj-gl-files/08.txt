@@ -1,0 +1,15 @@
+size 320 240
+vertex_shader color
+fragment_shader gouraud
+uniform 2 0 0 -0.6666 0 2 0 0 0 0 -1 0 0 0 0 1 
+vertex_data fffnnn
+v 0 0.25 0 1 0 0
+v -0.1667 -0.25 0 1 0 0
+v 0.1667 -0.25 0 0 1 0
+v 0.33 0.25 0 0 1 0
+v 0.1633 -0.25 0 0 1 0
+v 0.4967 -0.25 0 0 0 1
+v 0.66 0.25 0 0 0 1
+v 0.4933 -0.25 0 0 0 1
+v 0.8267 -0.25 0 1 0 0
+render triangle

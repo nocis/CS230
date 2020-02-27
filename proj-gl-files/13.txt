@@ -1,0 +1,15 @@
+size 500 500
+vertex_shader trivial
+fragment_shader white
+vertex_data fff
+v 0 0 0
+v .5 0 0
+v 1 1 0
+v 0 .5 0
+v -1 1 0
+v -.5 0 0
+v -1 -1 0
+v 0 -.5 0
+v 1 -1 0
+v .5 0 0
+render fan
